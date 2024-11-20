@@ -11,10 +11,20 @@ main:
     # load the value of exp into a1
     la a1 exp
     lw a1 0(a1)
+    
+    # this is my comment store a0 and a1 for calling convention
+    addi sp sp -12
+    sw ra 0(sp)
+    sw a0 4(sp)
+    sw a1 8(sp)
 
     # call ex2
     jal ra ex2
-
+    
+    lw ra 0(sp)
+    lw a0 4(sp)
+    lw a1 8(sp)
+    addi sp sp 12
     # prints the output of ex2
     mv a1 a0
     li a0 1
@@ -32,7 +42,9 @@ main:
 #     where ^ is the exponent operator, not XOR
 ex2:
     # Note: Add code BELOW without altering existing lines.
+    addi sp sp -8
     sw s0 0(sp)
+    sw ra 4(sp)
 
     # return 1 if a1 == 0
     beq a1 x0 ex2_zero_case
@@ -40,9 +52,15 @@ ex2:
     # otherwise, return ex2(a0, a1-1) * a0
     mv s0 a0      # save a0 in s0
     addi a1 a1 -1 # decrement a1
-
+    
+    addi sp sp -8
+    sw a0 0(sp)
+    sw a1 4(sp)
     jal ra ex2    # call ex2(a0, a1-1)
-
+    lw a0 0(sp)
+    lw a1 4(sp)
+    addi sp sp 8
+    
     mul a0 a0 s0  # multiply ex2(a0, a1-1) by s0
                   # (which contains the value of a0)
 
@@ -53,5 +71,6 @@ ex2_zero_case:
 
 ex2_end:
     lw s0 0(sp)
-
+    lw ra 4(sp)
+    addi sp sp 8
     jr ra

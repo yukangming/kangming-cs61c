@@ -49,6 +49,8 @@ next_test:
 #
 pow:
     # BEGIN PROLOGUE
+    addi sp sp -4
+    sw s0 0(sp)
     # FIXME: Need to save the callee saved register(s)
     # END PROLOGUE
     li s0, 1
@@ -62,6 +64,8 @@ pow_end:
     # BEGIN EPILOGUE
     # FIXME: Need to restore the callee saved register(s)
     # END EPILOGUE
+    lw s0 0(sp)
+    addi sp sp 4
     jr ra
 
 # Increments the elements of an array in-place.
@@ -73,8 +77,10 @@ pow_end:
 inc_arr:
     # BEGIN PROLOGUE
     # FIXME: What other registers need to be saved?
-    addi sp, sp, -4
+    addi sp, sp, -12
     sw ra, 0(sp)
+    sw s0 4(sp)
+    sw s1 8(sp)
     # END PROLOGUE
     mv s0, a0 # Copy start of array to saved register
     mv s1, a1 # Copy length of array to saved register
@@ -98,6 +104,10 @@ inc_arr_end:
     # FIXME: What other registers need to be restored?
     lw ra, 0(sp)
     addi sp, sp, 4
+    lw s0 0(sp)
+    addi sp sp 4
+    lw s1 0(sp)
+    addi sp sp 4
     # END EPILOGUE
     jr ra
 
@@ -112,12 +122,18 @@ inc_arr_end:
 helper_fn:
     # BEGIN PROLOGUE
     # FIXME: YOUR CODE HERE
+    addi sp sp -8
+    sw s0 0(sp)
+    sw ra 4(sp)
     # END PROLOGUE
     lw t1, 0(a0)
     addi s0, t1, 1
     sw s0, 0(a0)
     # BEGIN EPILOGUE
     # FIXME: YOUR CODE HERE
+    lw s0 0(sp)
+    lw ra 4(sp)
+    addi sp sp 8
     # END EPILOGUE
     jr ra
 

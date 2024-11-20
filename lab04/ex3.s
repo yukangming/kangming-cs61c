@@ -11,9 +11,18 @@ main:
     # load the value of exp into a1
     la a1 exp
     lw a1 0(a1)
-
+    
+    addi sp sp -12
+    sw ra 0(sp)
+    sw a0 4(sp)
+    sw a1 8(sp)
     # call ex3
     jal ra ex3
+    
+    lw ra 0(sp)
+    lw a0 4(sp)
+    lw a1 8(sp)
+    addi sp sp 12
 
     # prints the output of ex3
     mv a1 a0
@@ -32,16 +41,19 @@ main:
 #     where ^ is the exponent operator, not XOR
 ex3:
     # Note: Add code BELOW without altering existing lines.
-
+    addi sp sp -4
+    sw ra 0(sp)
     # return 1 if a1 == 0
     beq a1 x0 ex3_zero_case
 
     # otherwise, return ex3(a0, a1-1) * a0
     mv t0 a0      # save a0 in t0
     addi a1 a1 -1 # decrement a1
-
+    addi sp sp -4
+    sw t0 0(sp)
     jal ra ex3    # call ex3(a0, a1-1)
-
+    lw t0 0(sp)
+    addi sp sp 4
     mul a0 a0 t0  # multiply ex3(a0, a1-1) by t0
                   # (which contains the value of a0)
 
@@ -53,4 +65,6 @@ ex3_zero_case:
     li a0 1
 
 ex3_end:
+    lw ra 0(sp)
+    addi sp sp 4
     jr ra
